@@ -1,16 +1,19 @@
 package com.Bhuvaneswar.ProductServiceDemo.Services;
 
-import com.Bhuvaneswar.ProductServiceDemo.DTOs.productdto;
+import com.Bhuvaneswar.ProductServiceDemo.DTOs.Productdto;
+import com.Bhuvaneswar.ProductServiceDemo.models.Product;
+
+import java.util.List;
 
 public interface ProductService {
 
-    String GetAllProducts();
+    List<Product> GetAllProducts();
 
-    String GetSingleProduct(Long productId);
+    Product GetSingleProduct(Long productId);
 
-    String AddProduct(productdto productdto);
+    Product AddProduct(Productdto product);
 
-    String UpdateProduct(Long productId);
+    Product UpdateProduct(Long productId, Product product);
 
     String DeleteProduct(Long productId);
 }
