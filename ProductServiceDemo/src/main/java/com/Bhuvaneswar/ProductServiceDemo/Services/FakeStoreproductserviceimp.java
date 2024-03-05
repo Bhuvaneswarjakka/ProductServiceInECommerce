@@ -1,5 +1,6 @@
 package com.Bhuvaneswar.ProductServiceDemo.Services;
 
+import com.Bhuvaneswar.ProductServiceDemo.DTOs.FakeStoreProductdto;
 import com.Bhuvaneswar.ProductServiceDemo.DTOs.Productdto;
 import com.Bhuvaneswar.ProductServiceDemo.models.Category;
 import com.Bhuvaneswar.ProductServiceDemo.models.Product;
@@ -20,41 +21,9 @@ public class FakeStoreproductserviceimp implements ProductService
     {
         this.restTemplateBuilder=restTemplateBuilder;
     }
-    @Override
-    public List<Product> GetAllProducts()
+
+    private Product ConvertFakeStoreProductDtoToProduct(FakeStoreProductdto productdto)
     {
-        RestTemplate restTemplate=restTemplateBuilder.build();
-        ResponseEntity<Productdto[]> response=restTemplate.getForEntity(
-                "https://fakestoreapi.com/products",
-                Productdto[].class
-        );
-
-        List<Product> ans=new ArrayList<>();
-
-        for(Productdto productdto : response.getBody())
-        {
-            Product product=new Product();
-            product.setId(productdto.getId());
-            Category category=new Category();
-            category.setName(productdto.getCategory());
-            product.setCategory(category);
-            product.setTitle(productdto.getTitle());
-            product.setPrice(productdto.getPrice());
-            product.setDescription(productdto.getDescription());
-            product.setImageUrl(productdto.getImage());
-            ans.add(product);
-        }
-
-        return ans;
-    }
-
-    @Override
-    public Product GetSingleProduct(Long productId)
-    {
-        RestTemplate restTemplate=restTemplateBuilder.build();
-        ResponseEntity<Productdto> response= restTemplate.getForEntity("https://fakestoreapi.com/products/{id}",
-                Productdto.class, productId);
-        Productdto productdto=response.getBody();
         Product product=new Product();
         product.setId(productdto.getId());
         Category category=new Category();
@@ -66,26 +35,46 @@ public class FakeStoreproductserviceimp implements ProductService
         product.setImageUrl(productdto.getImage());
         return product;
     }
+    @Override
+    public List<Product> GetAllProducts()
+    {
+        RestTemplate restTemplate=restTemplateBuilder.build();
+        ResponseEntity<FakeStoreProductdto[]> response=restTemplate.getForEntity(
+                "https://fakestoreapi.com/products",
+                FakeStoreProductdto[].class
+        );
+
+        List<Product> ans=new ArrayList<>();
+
+        for(FakeStoreProductdto productdto : response.getBody())
+        {
+            ans.add(ConvertFakeStoreProductDtoToProduct(productdto));
+        }
+
+        return ans;
+    }
+
+    @Override
+    public Product GetSingleProduct(Long productId)
+    {
+        RestTemplate restTemplate=restTemplateBuilder.build();
+        ResponseEntity<FakeStoreProductdto> response= restTemplate.getForEntity("https://fakestoreapi.com/products/{id}",
+                FakeStoreProductdto.class, productId);
+
+        FakeStoreProductdto productdto=response.getBody();
+        return ConvertFakeStoreProductDtoToProduct(productdto);
+    }
 
     @Override
     public Product AddProduct(Productdto product)
     {
         RestTemplate restTemplate=restTemplateBuilder.build();
-        ResponseEntity<Productdto> response = restTemplate.postForEntity("https://fakestoreapi.com/products",
-                product,Productdto.class);
+        ResponseEntity<FakeStoreProductdto> response = restTemplate.postForEntity("https://fakestoreapi.com/products",
+                product,FakeStoreProductdto.class);
 
-        Productdto productdto=response.getBody();
-        Product product1=new Product();
-        product1.setId(productdto.getId());
-        Category category=new Category();
-        category.setName(productdto.getCategory());
-        product1.setCategory(category);
-        product1.setTitle(productdto.getTitle());
-        product1.setPrice(productdto.getPrice());
-        product1.setDescription(productdto.getDescription());
-        product1.setImageUrl(productdto.getImage());
+        FakeStoreProductdto productdto=response.getBody();
 
-        return product1;
+        return ConvertFakeStoreProductDtoToProduct(productdto);
     }
 
     @Override
